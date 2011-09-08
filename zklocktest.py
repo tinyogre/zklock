@@ -11,7 +11,13 @@
 #
 import zklock, time
 
+# You can specify a host to connect().  The default is localhost and
+# the default ZooKeeper port.
 zklock.connect()
+
+# This creates a global lock named 'test'.  Any other zklock connected
+# to the same ZooKeeper instance and trying to create a lock of the
+# same name will be blocked while this program holds the lock named 'test'
 z = zklock.Lock('test')
 
 if z.acquire():
