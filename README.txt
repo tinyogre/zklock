@@ -1,9 +1,14 @@
+Copyright (c) 2011 Joe Rumsey (joe@rumsey.org)
+Released under the LGPL, see COPYING.txt for details
+
 zklock is a python package that provides a simple distributed mutex
 implementation using zookeeper as the back end.
 
 * HOW TO INSTALL
 
 $ pip install zklock
+
+Or get it from github, see http://github.com/tinyogre/zklock for details
 
 zklock requires zkpython.  Additionally, installing zkpython requires
 the zookeeper C library be installed first.  You can download and
