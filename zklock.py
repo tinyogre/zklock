@@ -107,7 +107,7 @@ class Lock:
                 reconnect()
                 continue
 
-    def acquire(self):
+    def acquire(self, block = True):
         # Here's what this does:
         # Creates a child node of the named node with a unique ID
         # Gets all the children of the named node
@@ -148,12 +148,16 @@ class Lock:
                 # The lock is ours!
                 acquired = True
             else:
-                # Wait for a notification from get_children
-                self.cv.wait()
+                if block:
+                    # Wait for a notification from get_children
+                    self.cv.wait()
+                else:
+                    #lock could not be acquired
+                    break
         self.cv.release()
 
         locks[self.name].remove(self)
-        return True
+        return acquired
 
     def release(self):
         # All release has to do, if you follow the logic in acquire, is delete the unique ID that this lock created.  That will wake
@@ -168,3 +172,23 @@ class Lock:
                 reconnect()
         self.znode = None
         self.keyname = None
+
+
+class ScopedLock:
+    def __init__(self, name, block=True):
+        self.name = name
+        self.lock = None
+        self.acquired = None
+        self.block = block
+
+    def __enter__(self):
+        if not self.lock:
+            self.lock = Lock(self.name)
+        self.acquired = self.lock.acquire(block=self.block)
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if self.acquired:
+            self.lock.release()
+            self.lock = None
+            self.acquired = False

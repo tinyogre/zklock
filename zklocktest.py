@@ -20,10 +20,18 @@ zklock.connect()
 # same name will be blocked while this program holds the lock named 'test'
 z = zklock.Lock('test')
 
-if z.acquire():
-    print "zklocktest: Lock acquired"
-    time.sleep(20)
-    z.release()
+ try:
+     if z.acquire():
+         print "zklocktest: Lock acquired"
+         time.sleep(20)
+         z.release()
+ except:
+     z.release()
 
+with zklock.ScopedLock("scoped_lock_test", block=False) as z:
+    if z.acquired:
+        print "Locked!"
+        time.sleep(20)
+    else:
+        print "Could not obtain lock!"
 print "zklocktest: Exiting"
-
